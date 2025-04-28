@@ -1,39 +1,50 @@
 pipeline {
-    agent any  // Use any available agent
+    agent any
 
     tools {
-        maven 'Maven'  // Ensure this matches the name configured in Jenkins
+        jdk 'jdk-11'         // Ensure JDK version
+        maven 'maven-3.8.8'  // Ensure Maven version
     }
+
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'master', url: 'https://github.com/tanmaygupta7781/MvnApp'
+                git url: 'https://github.com/tanmaygupta7781/MvnApp.git', branch: 'master'
+            }
+        }
+
+        stage('Environment Check') {
+            steps {
+                sh 'echo $PATH'
+                sh 'java -version'
+                sh 'mvn -version'
             }
         }
 
         stage('Build') {
             steps {
-                sh 'mvn clean package'  // Run Maven build
+                script {
+                    try {
+                        sh 'mvn clean package -X'  // Debugging build command
+                    } catch (Exception e) {
+                        echo "Build failed: ${e.getMessage()}"
+                        currentBuild.result = 'FAILURE'
+                    }
+                }
             }
         }
 
         stage('Test') {
             steps {
-                sh 'mvn test'  // Run unit tests
+                sh 'mvn test'
             }
         }
 
-        
-        
-       
         stage('Run Application') {
             steps {
-                // Start the JAR application
-                sh 'java -jar target/MvnApp-1.0-SNAPSHOT.jar'
+                sh 'java -jar target/*.jar'
             }
         }
-
-        
     }
 
     post {
