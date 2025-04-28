@@ -1,58 +1,139 @@
 pipeline {
-    agent any
+ 
+
+    agent any  // Use any available agent
+ 
+
+
+ 
 
     tools {
-        jdk 'jdk-11'         // Ensure JDK version
-        maven 'maven-3.8.8'  // Ensure Maven version
+ 
+
+        maven 'Maven'  // Ensure this matches the name configured in Jenkins
+ 
+
     }
+ 
 
     stages {
-        stage('Checkout') {
-            steps {
-                git url: 'https://github.com/tanmaygupta7781/MvnApp.git', branch: 'master'
-            }
-        }
+ 
 
-        stage('Environment Check') {
+        stage('Checkout') {
+ 
+
             steps {
-                sh 'echo $PATH'
-                sh 'java -version'
-                sh 'mvn -version'
+ 
+
+                git branch: 'master', url: 'https://github.com/tanmaygupta7781/MvnApp'
+ 
+
             }
+ 
+
         }
+ 
+
+
+ 
 
         stage('Build') {
+ 
+
             steps {
-                script {
-                    try {
-                        sh 'mvn clean package -X'  // Debugging build command
-                    } catch (Exception e) {
-                        echo "Build failed: ${e.getMessage()}"
-                        currentBuild.result = 'FAILURE'
-                    }
-                }
+ 
+
+                sh 'mvn clean package'  // Run Maven build
+ 
+
             }
+ 
+
         }
+ 
+
+
+ 
 
         stage('Test') {
+ 
+
             steps {
-                sh 'mvn test'
+ 
+
+                sh 'mvn test'  // Run unit tests
+ 
+
             }
+ 
+
         }
+ 
+
+
+ 
+
+        
+ 
+
+        
+ 
+
+       
+ 
 
         stage('Run Application') {
+ 
+
             steps {
-                sh 'java -jar target/*.jar'
+ 
+
+                // Start the JAR application
+ 
+
+                sh 'java -jar target/MvnApp-1.0-SNAPSHOT.jar'
+ 
+
             }
+ 
+
         }
+ 
+
+
+ 
+
+        
+ 
+
     }
+ 
+
+
+ 
 
     post {
+ 
+
         success {
+ 
+
             echo 'Build and deployment successful!'
+ 
+
         }
+ 
+
         failure {
+ 
+
             echo 'Build failed!'
+ 
+
         }
+ 
+
     }
+ 
+
 }
