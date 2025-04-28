@@ -29,7 +29,7 @@ pipeline {
         stage('Run Application') {
             steps {
                 // Start the JAR application
-                sh 'mvn compile'
+                sh 'java -jar target/my-app-1.0-SNAPSHOT.jar'
             }
         }
 
